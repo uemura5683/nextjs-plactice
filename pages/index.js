@@ -1,31 +1,32 @@
 import Head from 'next/head'
 import Layout, { siteTitle } from '../components/layout'
 import utilStyles from '../styles/utils.module.css'
-import Link from 'next/link'
-
-export default function Home({ posts }) {
+import Link from 'next/link';
+export default function Home({blog}) {
   return (
-    <Layout home>
-      <Head>
-        <title>{siteTitle}</title>
-      </Head>
-    </Layout>
-  )
+    <div>
+      {blog.map(blog => (
+        <ul key={blog.id}>
+          <li>
+            <Link href={`blog/${blog.id}`}>
+              <a>{blog.title}</a>
+            </Link>
+          </li>
+        </ul>
+      ))}
+    </div>
+  );
 }
-
-export async function getStaticProps() {
-  const key = {
-    headers: {'X-API-KEY': process.env.API_KEY},
+export const getStaticProps = async () => {
+  let key = {
+    headers: {'X-API-KEY': 'a9ca1ec4-edff-43d8-ace7-e5f0c68b5b50'},
   };
-
-  const res = await fetch('https://next-plactice.microcms.io/api/v1/blogs', key);
-
-  const posts = await res.json();
-
+  let data = await fetch('https://uemura5683.microcms.io/api/v1/blog', key)
+    .then(res => res.json())
+    .catch(() => null);
   return {
     props: {
-      posts,
+      blog: data.contents,
     },
-    unstable_revalidate: 30, // In seconds
-  }
-}
+  };
+};
